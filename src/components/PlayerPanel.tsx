@@ -104,9 +104,9 @@ export function PlayerCard({ player, isActive, delta, largestArmy, knightsPlayed
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <span style={{
           fontWeight: 'bold',
-          color: player.color,
+          color: isActive ? '#fff' : player.color,
           fontSize: isActive ? 24 : 20,
-          textShadow: isActive ? `0 0 12px ${player.color}aa` : undefined,
+          textShadow: isActive ? '0 1px 3px rgba(0,0,0,0.5)' : undefined,
         }}>
           {player.name}
         </span>
