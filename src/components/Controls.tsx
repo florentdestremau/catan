@@ -67,7 +67,7 @@ export function Controls({ state, dispatch }: ControlsProps) {
     const winner = players.find(p => p.id === state.winner)
     return (
       <div style={{ textAlign: 'center', padding: 20 }}>
-        <div style={{ fontSize: 28, fontWeight: 'bold', color: winner?.color }}>🎉 {winner?.name} gagne !</div>
+        <div style={{ fontSize: 36, fontWeight: 'bold', color: winner?.color }}>🎉 {winner?.name} gagne !</div>
         <button style={btnStyle} onClick={() => { localStorage.removeItem('catan:state:v1'); location.reload() }}>Nouvelle partie</button>
       </div>
     )
@@ -82,13 +82,13 @@ export function Controls({ state, dispatch }: ControlsProps) {
         padding: '10px 12px',
         boxShadow: `0 0 12px ${currentPlayer.color}66`,
       }}>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
           Tour de
         </div>
-        <div style={{ fontSize: 22, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+        <div style={{ fontSize: 29, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
           {currentPlayer.name}
         </div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', marginTop: 2 }}>
+        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.9)', marginTop: 2 }}>
           {phaseLabel(phase)}
         </div>
       </div>
@@ -98,9 +98,9 @@ export function Controls({ state, dispatch }: ControlsProps) {
 
       {/* Dés */}
       {dice && (
-        <div style={{ textAlign: 'center', fontSize: 28 }}>
+        <div style={{ textAlign: 'center', fontSize: 36 }}>
           {dieEmoji(dice[0])} {dieEmoji(dice[1])}
-          <span style={{ fontSize: 16, marginLeft: 8 }}>= {dice[0] + dice[1]}</span>
+          <span style={{ fontSize: 21, marginLeft: 8 }}>= {dice[0] + dice[1]}</span>
         </div>
       )}
 
@@ -113,10 +113,10 @@ export function Controls({ state, dispatch }: ControlsProps) {
 
       {phase === 'discard' && discardPlayer && (
         <div style={{ background: '#2c2c2c', borderRadius: 6, padding: 10 }}>
-          <div style={{ marginBottom: 8, fontSize: 13 }}>
+          <div style={{ marginBottom: 8, fontSize: 17 }}>
             <strong style={{ color: discardPlayer.color }}>{discardPlayer.name}</strong> doit défausser {mustDiscard} cartes
           </div>
-          <div style={{ marginBottom: 8, fontSize: 11, color: '#aaa' }}>
+          <div style={{ marginBottom: 8, fontSize: 14, color: '#aaa' }}>
             Clic sur une ressource pour défausser, re-clic sur le compteur pour annuler.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginBottom: 8 }}>
@@ -141,9 +141,9 @@ export function Controls({ state, dispatch }: ControlsProps) {
                     userSelect: 'none',
                   }}
                 >
-                  <div style={{ fontSize: 20, lineHeight: 1 }}>{RES_ICON_FR[res]}</div>
-                  <div style={{ fontSize: 11, color: '#fff', marginTop: 2 }}>{RES_FR[res]}</div>
-                  <div style={{ fontSize: 16, fontWeight: 'bold', color: '#fff', marginTop: 2 }}>{remaining}</div>
+                  <div style={{ fontSize: 26, lineHeight: 1 }}>{RES_ICON_FR[res]}</div>
+                  <div style={{ fontSize: 14, color: '#fff', marginTop: 2 }}>{RES_FR[res]}</div>
+                  <div style={{ fontSize: 21, fontWeight: 'bold', color: '#fff', marginTop: 2 }}>{remaining}</div>
                   {picked > 0 && (
                     <div
                       onClick={e => { e.stopPropagation(); handleDiscardChange(res, picked - 1) }}
@@ -151,7 +151,7 @@ export function Controls({ state, dispatch }: ControlsProps) {
                         position: 'absolute', top: -8, right: -8,
                         background: '#c0392b', color: '#fff', borderRadius: 12,
                         minWidth: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 12, fontWeight: 'bold', cursor: 'pointer',
+                        fontSize: 16, fontWeight: 'bold', cursor: 'pointer',
                         border: '2px solid #fff',
                       }}
                       title="Retirer de la défausse"
@@ -163,7 +163,7 @@ export function Controls({ state, dispatch }: ControlsProps) {
               )
             })}
           </div>
-          <div style={{ textAlign: 'center', fontSize: 13, marginBottom: 6, color: currentDiscardCount === mustDiscard ? '#2ecc71' : '#aaa' }}>
+          <div style={{ textAlign: 'center', fontSize: 17, marginBottom: 6, color: currentDiscardCount === mustDiscard ? '#2ecc71' : '#aaa' }}>
             {currentDiscardCount} / {mustDiscard} sélectionnée{mustDiscard > 1 ? 's' : ''}
           </div>
           <button
@@ -177,12 +177,12 @@ export function Controls({ state, dispatch }: ControlsProps) {
       )}
 
       {phase === 'move_robber' && (
-        <div style={{ fontSize: 13, color: '#e67e22' }}>Cliquez sur un hex pour déplacer le voleur</div>
+        <div style={{ fontSize: 17, color: '#e67e22' }}>Cliquez sur un hex pour déplacer le voleur</div>
       )}
 
       {phase === 'steal' && stealFrom && stealFrom.length > 0 && (
         <div>
-          <div style={{ fontSize: 13, marginBottom: 6 }}>Voler une ressource à :</div>
+          <div style={{ fontSize: 17, marginBottom: 6 }}>Voler une ressource à :</div>
           {stealFrom.map(tid => {
             const target = players.find(p => p.id === tid)
             return (
@@ -198,14 +198,14 @@ export function Controls({ state, dispatch }: ControlsProps) {
       {phase === 'actions' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {(state.pendingFreeRoads ?? 0) > 0 && (
-            <div style={{ background: '#8e44ad', color: '#fff', padding: 8, borderRadius: 6, fontSize: 13, textAlign: 'center' }}>
+            <div style={{ background: '#8e44ad', color: '#fff', padding: 8, borderRadius: 6, fontSize: 17, textAlign: 'center' }}>
               🛤️ Placez {state.pendingFreeRoads} route{state.pendingFreeRoads! > 1 ? 's' : ''} gratuite{state.pendingFreeRoads! > 1 ? 's' : ''}
             </div>
           )}
 
           <DevCardsPanel state={state} dispatch={dispatch} />
 
-          <div style={{ fontSize: 12, color: '#aaa' }}>
+          <div style={{ fontSize: 16, color: '#aaa' }}>
             Échanger avec la banque (4:1) :
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -219,13 +219,13 @@ export function Controls({ state, dispatch }: ControlsProps) {
                   display: 'flex', alignItems: 'center', gap: 4,
                   background: RESOURCE_COLORS[give], color: '#fff',
                   borderRadius: 4, padding: '4px 8px',
-                  fontSize: 13, fontWeight: 'bold',
+                  fontSize: 17, fontWeight: 'bold',
                   border: '1px solid rgba(255,255,255,0.3)',
                 }}>
-                  <span style={{ fontSize: 16 }}>{RES_ICON_FR[give]}</span>
+                  <span style={{ fontSize: 21 }}>{RES_ICON_FR[give]}</span>
                   <span>×4</span>
                 </div>
-                <span style={{ fontSize: 16, color: '#aaa' }}>→</span>
+                <span style={{ fontSize: 21, color: '#aaa' }}>→</span>
                 <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
                   {RESOURCES.filter(r => r !== give).map(receive => (
                     <button
@@ -237,12 +237,12 @@ export function Controls({ state, dispatch }: ControlsProps) {
                         color: '#fff',
                         border: '1px solid rgba(255,255,255,0.3)',
                         borderRadius: 4, padding: '4px 8px',
-                        fontSize: 16, cursor: 'pointer',
+                        fontSize: 21, cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 2,
                       }}
                     >
                       <span>{RES_ICON_FR[receive]}</span>
-                      <span style={{ fontSize: 11, fontWeight: 'bold' }}>+1</span>
+                      <span style={{ fontSize: 14, fontWeight: 'bold' }}>+1</span>
                     </button>
                   ))}
                 </div>
@@ -305,7 +305,7 @@ function BuildPanel({ state, dispatch }: { state: GameState; dispatch: (action: 
       marginTop: 4,
     }}>
       <div style={{
-        fontSize: 11,
+        fontSize: 14,
         color: anyAvailable ? '#2ecc71' : '#888',
         textTransform: 'uppercase',
         letterSpacing: 1,
@@ -338,15 +338,15 @@ function BuildPanel({ state, dispatch }: { state: GameState; dispatch: (action: 
               cursor: row.onClick ? 'pointer' : 'default',
             }}
           >
-            <span style={{ fontSize: 16, textAlign: 'center' }}>{row.icon}</span>
+            <span style={{ fontSize: 21, textAlign: 'center' }}>{row.icon}</span>
             <span style={{
-              fontSize: 13,
+              fontSize: 17,
               fontWeight: 600,
               color: row.available ? '#fff' : '#aaa',
             }}>
               {row.label}
               {row.extra && (
-                <span style={{ display: 'block', fontSize: 9, color: '#888', fontWeight: 400 }}>
+                <span style={{ display: 'block', fontSize: 12, color: '#888', fontWeight: 400 }}>
                   {row.extra}
                 </span>
               )}
@@ -361,7 +361,7 @@ function BuildPanel({ state, dispatch }: { state: GameState; dispatch: (action: 
                     color: '#fff',
                     borderRadius: 4,
                     padding: '2px 6px',
-                    fontSize: 11,
+                    fontSize: 14,
                     fontWeight: 'bold',
                     border: '1px solid rgba(255,255,255,0.25)',
                     display: 'inline-flex',
@@ -371,7 +371,7 @@ function BuildPanel({ state, dispatch }: { state: GameState; dispatch: (action: 
                     justifyContent: 'center',
                   }}
                 >
-                  <span style={{ fontSize: 10 }}>{RES_ICON[c.res]}</span>
+                  <span style={{ fontSize: 13 }}>{RES_ICON[c.res]}</span>
                   <span>{c.n}</span>
                 </span>
               ))}
@@ -380,7 +380,7 @@ function BuildPanel({ state, dispatch }: { state: GameState; dispatch: (action: 
         ))}
       </div>
       {anyAvailable && (
-        <div style={{ fontSize: 11, color: '#888', marginTop: 6, textAlign: 'center' }}>
+        <div style={{ fontSize: 14, color: '#888', marginTop: 6, textAlign: 'center' }}>
           Cliquez sur un emplacement surligné.
         </div>
       )}
@@ -422,8 +422,8 @@ function ResourcesBar({ player }: { player: GameState['players'][number] }) {
               opacity: has ? 1 : 0.45,
             }}
           >
-            <div style={{ fontSize: 18, lineHeight: 1 }}>{it.icon}</div>
-            <div style={{ fontSize: 22, fontWeight: 'bold', color: '#fff', lineHeight: 1.1, marginTop: 2 }}>{n}</div>
+            <div style={{ fontSize: 23, lineHeight: 1 }}>{it.icon}</div>
+            <div style={{ fontSize: 29, fontWeight: 'bold', color: '#fff', lineHeight: 1.1, marginTop: 2 }}>{n}</div>
           </div>
         )
       })}
@@ -457,7 +457,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
   return (
     <div style={{ borderTop: '1px solid #444', paddingTop: 8, marginTop: 4 }}>
       <div style={{
-        fontSize: 11, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1,
+        fontSize: 14, color: '#aaa', textTransform: 'uppercase', letterSpacing: 1,
         fontWeight: 'bold', marginBottom: 6,
       }}>
         🎴 Mes cartes dév.
@@ -465,7 +465,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
 
       {/* Cartes jouables */}
       {playableKinds.length === 0 && newKindsToShow.length === 0 && (
-        <div style={{ fontSize: 11, color: '#666', fontStyle: 'italic' }}>Aucune carte</div>
+        <div style={{ fontSize: 14, color: '#666', fontStyle: 'italic' }}>Aucune carte</div>
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -493,7 +493,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                   position: 'absolute', top: 6, right: 6,
                   background: '#000', color: '#fff',
                   borderRadius: 12, padding: '2px 8px',
-                  fontSize: 11, fontWeight: 'bold',
+                  fontSize: 14, fontWeight: 'bold',
                   border: `1px solid ${meta.color}`,
                   zIndex: 2,
                 }}>
@@ -506,7 +506,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
                 <div style={{
-                  fontSize: 28, lineHeight: 1,
+                  fontSize: 36, lineHeight: 1,
                   width: 44, height: 44,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: 'rgba(0,0,0,0.25)',
@@ -516,10 +516,10 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                   {meta.icon}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                  <div style={{ fontSize: 18, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
                     {meta.label}
                   </div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
                     {meta.desc}
                   </div>
                 </div>
@@ -540,7 +540,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                     flex: 1,
                     background: canPlayDev ? meta.color : '#333',
                     color: '#fff', border: 'none', borderRadius: 6,
-                    padding: '6px 10px', fontSize: 12, fontWeight: 'bold',
+                    padding: '6px 10px', fontSize: 16, fontWeight: 'bold',
                     cursor: canPlayDev ? 'pointer' : 'not-allowed',
                     opacity: canPlayDev ? 1 : 0.5,
                     textShadow: '0 1px 2px rgba(0,0,0,0.5)',
@@ -569,7 +569,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                 position: 'absolute', top: 6, right: 6,
                 background: '#000', color: '#fff',
                 borderRadius: 12, padding: '2px 8px',
-                fontSize: 11, fontWeight: 'bold',
+                fontSize: 14, fontWeight: 'bold',
                 border: `1px solid ${DEV_META.vp.color}`,
               }}>
                 ×{playable.vp}
@@ -577,7 +577,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
             )}
             <div style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
-                fontSize: 28, lineHeight: 1,
+                fontSize: 36, lineHeight: 1,
                 width: 44, height: 44,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'rgba(0,0,0,0.25)',
@@ -587,10 +587,10 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                 ⭐
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                <div style={{ fontSize: 18, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
                   Point{playable.vp > 1 ? 's' : ''} de Victoire
                 </div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
                   Compté{playable.vp > 1 ? 's' : ''} automatiquement dans vos PV
                 </div>
               </div>
@@ -617,14 +617,14 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                   position: 'absolute', top: 6, right: 6,
                   background: '#000', color: '#fff',
                   borderRadius: 12, padding: '2px 8px',
-                  fontSize: 11, fontWeight: 'bold',
+                  fontSize: 14, fontWeight: 'bold',
                   border: `1px solid ${meta.color}`,
                 }}>
                   ×{count}
                 </div>
               )}
               <div style={{
-                fontSize: 22, width: 44, height: 44,
+                fontSize: 29, width: 44, height: 44,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: '#0f0f1a', borderRadius: 8,
                 border: `1px solid ${meta.color}66`,
@@ -633,10 +633,10 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                 🕒
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 'bold', color: '#ddd' }}>
+                <div style={{ fontSize: 17, fontWeight: 'bold', color: '#ddd' }}>
                   {meta.icon} {meta.label}
                 </div>
-                <div style={{ fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: '#888', fontStyle: 'italic', marginTop: 2 }}>
                   Achetée ce tour · jouable au tour suivant
                 </div>
               </div>
@@ -646,13 +646,13 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
       </div>
 
       {current.hasPlayedDevCard && (
-        <div style={{ fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: '#888', fontStyle: 'italic', marginTop: 4 }}>
           Une carte dév. déjà jouée ce tour.
         </div>
       )}
 
       {state.largestArmy && (
-        <div style={{ fontSize: 11, color: '#f1c40f', marginTop: 6, fontWeight: 'bold' }}>
+        <div style={{ fontSize: 14, color: '#f1c40f', marginTop: 6, fontWeight: 'bold' }}>
           🏆 Plus grande armée : {state.players.find(p => p.id === state.largestArmy)?.name} (+2 PV)
         </div>
       )}
@@ -665,7 +665,7 @@ function ResourceSelect({ value, onChange }: { value: Resource; onChange: (r: Re
     <select
       value={value}
       onChange={e => onChange(e.target.value as Resource)}
-      style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: 4, padding: '2px 4px', fontSize: 11 }}
+      style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: 4, padding: '2px 4px', fontSize: 14 }}
     >
       <option value="wood">🪵 Bois</option>
       <option value="brick">🧱 Argile</option>
@@ -682,7 +682,7 @@ function Kbd({ children }: { children: React.ReactNode }) {
       display: 'inline-block',
       marginLeft: 8,
       padding: '2px 6px',
-      fontSize: 10,
+      fontSize: 13,
       fontWeight: 'bold',
       background: 'rgba(0,0,0,0.35)',
       borderRadius: 4,
@@ -703,7 +703,7 @@ const btnStyle: React.CSSProperties = {
   padding: '8px 14px',
   cursor: 'pointer',
   fontWeight: 'bold',
-  fontSize: 14,
+  fontSize: 18,
   width: '100%',
 }
 

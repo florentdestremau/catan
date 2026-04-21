@@ -17,7 +17,7 @@ export function Log({ entries }: LogProps) {
       background: '#1a1a1a',
       borderRadius: 6,
       padding: 8,
-      fontSize: 12,
+      fontSize: 16,
       color: '#ccc',
     }}>
       {entries.map((e, i) => (

@@ -176,7 +176,7 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
           gap: 6,
         }}>
           <h3 style={{
-            margin: 0, fontSize: 15, color: '#ddd',
+            margin: 0, fontSize: 20, color: '#ddd',
             background: 'rgba(15,15,26,0.7)', borderRadius: 6,
             padding: '4px 10px', backdropFilter: 'blur(4px)',
             border: '1px solid #333',
@@ -194,7 +194,7 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
           <button
             style={{
               background: 'rgba(127,140,141,0.85)', color: '#fff', border: 'none',
-              borderRadius: 6, padding: 6, cursor: 'pointer', fontSize: 12,
+              borderRadius: 6, padding: 6, cursor: 'pointer', fontSize: 16,
             }}
             onClick={() => { if (confirm('Abandonner la partie en cours ?')) onReset() }}
           >

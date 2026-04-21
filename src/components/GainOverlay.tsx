@@ -59,7 +59,7 @@ export function GainOverlay({ state }: GainOverlayProps) {
         }}>
           <div style={{
             textAlign: 'center',
-            fontSize: 14,
+            fontSize: 18,
             color: '#aaa',
             textTransform: 'uppercase',
             letterSpacing: 2,
@@ -79,7 +79,7 @@ export function GainOverlay({ state }: GainOverlayProps) {
                     minWidth: 100,
                     fontWeight: 'bold',
                     color: player.color,
-                    fontSize: 20,
+                    fontSize: 26,
                     textShadow: `0 0 12px ${player.color}66`,
                   }}>
                     {player.name}
@@ -94,15 +94,15 @@ export function GainOverlay({ state }: GainOverlayProps) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 8,
-                        fontSize: 22,
+                        fontSize: 29,
                         fontWeight: 'bold',
                         border: '2px solid rgba(255,255,255,0.3)',
                         boxShadow: `0 4px 18px ${n > 0 ? RESOURCE_COLORS[res] : '#000'}66`,
                         animation: 'itemBounce 0.6s ease',
                       }}>
-                        <span style={{ fontSize: 28 }}>{RESOURCE_ICONS[res]}</span>
+                        <span style={{ fontSize: 36 }}>{RESOURCE_ICONS[res]}</span>
                         <span>{n > 0 ? '+' : ''}{n}</span>
-                        <span style={{ fontSize: 13, opacity: 0.85 }}>{RESOURCE_SHORT[res]}</span>
+                        <span style={{ fontSize: 17, opacity: 0.85 }}>{RESOURCE_SHORT[res]}</span>
                       </div>
                     ))}
                   </div>
