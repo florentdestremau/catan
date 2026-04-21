@@ -468,7 +468,7 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
         <div style={{ fontSize: 11, color: '#666', fontStyle: 'italic' }}>Aucune carte</div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
         {playableKinds.map(kind => {
           const meta = DEV_META[kind]
           const count = playable[kind]
@@ -480,121 +480,72 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
             undefined
 
           return (
-            <div key={kind} style={{
+            <div key={kind} title={meta.desc} style={{
               position: 'relative',
               background: '#1a1a24',
               border: `1px solid ${meta.color}66`,
-              borderLeft: `4px solid ${meta.color}`,
-              borderRadius: 8,
-              overflow: 'hidden',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+              borderLeft: `3px solid ${meta.color}`,
+              borderRadius: 6,
+              padding: '6px 7px',
+              display: 'flex', flexDirection: 'column', gap: 5,
             }}>
               {count > 1 && (
                 <div style={{
-                  position: 'absolute', top: 6, right: 6,
+                  position: 'absolute', top: 3, right: 3,
                   background: meta.color, color: '#fff',
-                  borderRadius: 10, padding: '1px 7px',
-                  fontSize: 11, fontWeight: 'bold',
-                  zIndex: 2,
+                  borderRadius: 8, padding: '0 5px',
+                  fontSize: 10, fontWeight: 'bold',
                 }}>
                   ×{count}
                 </div>
               )}
 
-              <div style={{
-                padding: '10px 10px 8px',
-                display: 'flex', alignItems: 'center', gap: 10,
-              }}>
-                <div style={{
-                  fontSize: 24, lineHeight: 1,
-                  width: 38, height: 38,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: `${meta.color}22`,
-                  borderRadius: 8,
-                  border: `1px solid ${meta.color}55`,
-                }}>
-                  {meta.icon}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 'bold', color: meta.color }}>
-                    {meta.label}
-                  </div>
-                  <div style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>
-                    {meta.desc}
-                  </div>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 18, lineHeight: 1 }}>{meta.icon}</span>
+                <span style={{ fontSize: 12, fontWeight: 'bold', color: meta.color }}>
+                  {meta.label}
+                </span>
               </div>
 
-              <div style={{ padding: '0 10px 10px', display: 'flex', gap: 6, alignItems: 'center' }}>
-                {kind === 'year_of_plenty' && (
-                  <>
-                    <ResourceSelect value={yopR1} onChange={setYopR1} />
-                    <ResourceSelect value={yopR2} onChange={setYopR2} />
-                  </>
-                )}
-                {kind === 'monopoly' && <ResourceSelect value={monoRes} onChange={setMonoRes} />}
-                <button
-                  disabled={!canPlayDev || !playAction}
-                  onClick={playAction}
-                  style={{
-                    flex: 1,
-                    background: canPlayDev ? meta.color : '#333',
-                    color: '#fff', border: 'none', borderRadius: 6,
-                    padding: '6px 10px', fontSize: 12, fontWeight: 'bold',
-                    cursor: canPlayDev ? 'pointer' : 'not-allowed',
-                    opacity: canPlayDev ? 1 : 0.5,
-                    textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                    boxShadow: canPlayDev ? `0 2px 6px ${meta.color}66` : undefined,
-                  }}
-                >
-                  ▶ Jouer
-                </button>
-              </div>
+              {kind === 'year_of_plenty' && (
+                <div style={{ display: 'flex', gap: 3 }}>
+                  <ResourceSelect value={yopR1} onChange={setYopR1} />
+                  <ResourceSelect value={yopR2} onChange={setYopR2} />
+                </div>
+              )}
+              {kind === 'monopoly' && <ResourceSelect value={monoRes} onChange={setMonoRes} />}
+              <button
+                disabled={!canPlayDev || !playAction}
+                onClick={playAction}
+                style={{
+                  background: canPlayDev ? meta.color : '#333',
+                  color: '#fff', border: 'none', borderRadius: 4,
+                  padding: '4px 6px', fontSize: 11, fontWeight: 'bold',
+                  cursor: canPlayDev ? 'pointer' : 'not-allowed',
+                  opacity: canPlayDev ? 1 : 0.5,
+                }}
+              >
+                ▶ Jouer
+              </button>
             </div>
           )
         })}
 
         {/* Carte Point de Victoire (auto) */}
         {playable.vp > 0 && (
-          <div style={{
+          <div title="Compté automatiquement dans vos PV" style={{
             position: 'relative',
             background: '#1a1a24',
             border: `1px solid ${DEV_META.vp.color}66`,
-            borderLeft: `4px solid ${DEV_META.vp.color}`,
-            borderRadius: 8,
-            overflow: 'hidden',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+            borderLeft: `3px solid ${DEV_META.vp.color}`,
+            borderRadius: 6,
+            padding: '6px 7px',
+            display: 'flex', alignItems: 'center', gap: 6,
           }}>
-            {playable.vp > 1 && (
-              <div style={{
-                position: 'absolute', top: 6, right: 6,
-                background: DEV_META.vp.color, color: '#000',
-                borderRadius: 10, padding: '1px 7px',
-                fontSize: 11, fontWeight: 'bold',
-              }}>
-                ×{playable.vp}
-              </div>
-            )}
-            <div style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                fontSize: 24, lineHeight: 1,
-                width: 38, height: 38,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: `${DEV_META.vp.color}22`,
-                borderRadius: 8,
-                border: `1px solid ${DEV_META.vp.color}55`,
-              }}>
-                ⭐
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 'bold', color: DEV_META.vp.color }}>
-                  Point{playable.vp > 1 ? 's' : ''} de Victoire
-                </div>
-                <div style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>
-                  Compté{playable.vp > 1 ? 's' : ''} automatiquement dans vos PV
-                </div>
-              </div>
-            </div>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>⭐</span>
+            <span style={{ fontSize: 12, fontWeight: 'bold', color: DEV_META.vp.color }}>
+              {playable.vp > 1 ? `${playable.vp} PV` : 'Point de Victoire'}
+            </span>
           </div>
         )}
 
@@ -603,43 +554,30 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
           const meta = DEV_META[kind]
           const count = newByKind[kind]
           return (
-            <div key={`new-${kind}`} style={{
+            <div key={`new-${kind}`} title="Achetée ce tour · jouable au tour suivant" style={{
               position: 'relative',
-              background: 'repeating-linear-gradient(45deg, #1e1e2a, #1e1e2a 8px, #282838 8px, #282838 16px)',
-              border: `2px dashed ${meta.color}aa`,
-              borderRadius: 10,
-              padding: '10px',
-              display: 'flex', alignItems: 'center', gap: 10,
-              opacity: 0.85,
+              background: 'repeating-linear-gradient(45deg, #1e1e2a, #1e1e2a 6px, #282838 6px, #282838 12px)',
+              border: `1px dashed ${meta.color}88`,
+              borderRadius: 6,
+              padding: '6px 7px',
+              display: 'flex', alignItems: 'center', gap: 6,
+              opacity: 0.75,
             }}>
               {count > 1 && (
                 <div style={{
-                  position: 'absolute', top: 6, right: 6,
+                  position: 'absolute', top: 3, right: 3,
                   background: '#000', color: '#fff',
-                  borderRadius: 12, padding: '2px 8px',
-                  fontSize: 11, fontWeight: 'bold',
+                  borderRadius: 8, padding: '0 5px',
+                  fontSize: 10, fontWeight: 'bold',
                   border: `1px solid ${meta.color}`,
                 }}>
                   ×{count}
                 </div>
               )}
-              <div style={{
-                fontSize: 22, width: 44, height: 44,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#0f0f1a', borderRadius: 8,
-                border: `1px solid ${meta.color}66`,
-                filter: 'grayscale(0.6)',
-              }}>
-                🕒
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 'bold', color: '#ddd' }}>
-                  {meta.icon} {meta.label}
-                </div>
-                <div style={{ fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 2 }}>
-                  Achetée ce tour · jouable au tour suivant
-                </div>
-              </div>
+              <span style={{ fontSize: 16 }}>🕒</span>
+              <span style={{ fontSize: 11, fontWeight: 'bold', color: '#aaa' }}>
+                {meta.icon} {meta.label}
+              </span>
             </div>
           )
         })}
@@ -665,7 +603,7 @@ function ResourceSelect({ value, onChange }: { value: Resource; onChange: (r: Re
     <select
       value={value}
       onChange={e => onChange(e.target.value as Resource)}
-      style={{ background: '#333', color: '#fff', border: '1px solid #555', borderRadius: 4, padding: '2px 4px', fontSize: 11 }}
+      style={{ flex: 1, minWidth: 0, background: '#333', color: '#fff', border: '1px solid #555', borderRadius: 4, padding: '2px 4px', fontSize: 10 }}
     >
       <option value="wood">🪵 Bois</option>
       <option value="brick">🧱 Argile</option>
