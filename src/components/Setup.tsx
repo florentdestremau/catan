@@ -121,6 +121,18 @@ export function Setup({ onStart }: SetupProps) {
           >
             ▶ Commencer la partie
           </button>
+          <button
+            style={{
+              width: '100%', padding: '10px', marginTop: 10, borderRadius: 8,
+              border: '1px dashed #556070',
+              background: 'transparent', color: '#a0b0c5',
+              fontSize: 13, cursor: 'pointer',
+            }}
+            onClick={() => { location.href = '?fixture=mid' }}
+            title="Charger une partie déjà en cours pour tester / faire des captures"
+          >
+            🧪 Démo : partie en cours
+          </button>
         </div>
 
         {/* Colonne droite : screenshots + règles */}
