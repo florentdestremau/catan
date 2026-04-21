@@ -6,9 +6,11 @@ interface HomeProps {
 }
 
 export function Home({ onJoined }: HomeProps) {
-  const [mode, setMode] = useState<'menu' | 'create' | 'join'>('menu')
+  const params = new URLSearchParams(location.search)
+  const initialJoin = (params.get('join') ?? '').toUpperCase()
+  const [mode, setMode] = useState<'menu' | 'create' | 'join'>(initialJoin ? 'join' : 'menu')
   const [name, setName] = useState('')
-  const [code, setCode] = useState('')
+  const [code, setCode] = useState(initialJoin)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

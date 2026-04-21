@@ -108,6 +108,7 @@ const server = Bun.serve<WsData, undefined>({
       const body = await parseJson<{ name?: string; token?: string }>(req) ?? {}
       const res = joinRoom(joinMatch[1], body.name ?? '', body.token)
       if ('error' in res) return cors(Response.json({ error: res.error }, { status: 400 }))
+      broadcast(joinMatch[1])
       return cors(Response.json({ roomId: res.room.id, token: res.token, playerId: res.playerId }))
     }
 
