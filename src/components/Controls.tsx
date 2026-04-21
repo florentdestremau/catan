@@ -3,6 +3,7 @@ import type { GameState, Resource, DevCardKind } from '../game/types'
 import type { GameAction } from '../game/actions'
 import { totalCards, canAfford, COSTS, isRoadPlacementValid, isSettlementPlacementValid } from '../game/rules'
 import { canBuildAnything } from '../game/checks'
+import { ResourcesModal } from './ResourcesModal'
 
 const DEV_META: Record<DevCardKind, { label: string; icon: string; color: string; desc: string }> = {
   knight:         { label: 'Chevalier',        icon: '⚔️',  color: '#c0392b', desc: 'Déplace le voleur et vole une carte' },
@@ -15,6 +16,7 @@ const DEV_META: Record<DevCardKind, { label: string; icon: string; color: string
 interface ControlsProps {
   state: GameState
   dispatch: (action: GameAction) => void
+  isMobile?: boolean
 }
 
 const RESOURCES: Resource[] = ['wood', 'brick', 'wheat', 'sheep', 'ore']
@@ -28,10 +30,11 @@ const RES_ICON_FR: Record<Resource, string> = {
   wood: '🪵', brick: '🧱', wheat: '🌾', sheep: '🐑', ore: '⛏️',
 }
 
-export function Controls({ state, dispatch }: ControlsProps) {
+export function Controls({ state, dispatch, isMobile = false }: ControlsProps) {
   const { phase, players, currentPlayerIndex, dice, pendingDiscards, stealFrom } = state
   const currentPlayer = players[currentPlayerIndex]
   const [discardSelection, setDiscardSelection] = useState<Partial<Record<Resource, number>>>({})
+  const [modalOpen, setModalOpen] = useState(false)
 
   function handleEndTurn() {
     if (phase === 'actions' && canBuildAnything(state)) {
@@ -75,22 +78,41 @@ export function Controls({ state, dispatch }: ControlsProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {/* Bandeau du joueur actif */}
+      {isMobile && (
+        <button
+          onClick={() => setModalOpen(true)}
+          style={{
+            position: 'sticky', top: 48, zIndex: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+            gap: 4, padding: '8px 10px',
+            background: '#1a1a24',
+            border: '1px solid #333',
+            borderRadius: 8,
+            cursor: 'pointer',
+            color: '#fff',
+            width: '100%',
+          }}
+          aria-label="Voir mes ressources"
+        >
+          {(['wood','brick','wheat','sheep','ore'] as Resource[]).map(res => (
+            <span key={res} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 15, fontWeight: 'bold' }}>
+              <span style={{ fontSize: 17 }}>{RES_ICON_FR[res]}</span>
+              <span>{currentPlayer.resources[res]}</span>
+            </span>
+          ))}
+          <span style={{ fontSize: 11, color: '#888', marginLeft: 4 }}>détails ▸</span>
+        </button>
+      )}
+      {isMobile && modalOpen && (
+        <ResourcesModal state={state} dispatch={dispatch} onClose={() => setModalOpen(false)} />
+      )}
+      {/* Phase du tour */}
       <div style={{
-        background: `linear-gradient(135deg, ${currentPlayer.color} 0%, ${currentPlayer.color}aa 100%)`,
-        borderRadius: 8,
-        padding: '10px 12px',
-        boxShadow: `0 0 12px ${currentPlayer.color}66`,
+        fontSize: 12, color: '#aaa', textAlign: 'center',
+        padding: '4px 8px', background: '#1a1a24',
+        border: '1px solid #333', borderRadius: 6,
       }}>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
-          Tour de
-        </div>
-        <div style={{ fontSize: 22, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
-          {currentPlayer.name}
-        </div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', marginTop: 2 }}>
-          {phaseLabel(phase)}
-        </div>
+        {phaseLabel(phase)}
       </div>
 
       {/* Rappel des ressources du joueur actif, en grand */}

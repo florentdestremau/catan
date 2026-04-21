@@ -11,22 +11,80 @@ interface PlayerCardProps {
   delta?: Partial<Record<Resource, number>>
   largestArmy: boolean
   knightsPlayed: number
+  compact?: boolean
 }
 
-export function PlayerCard({ player, isActive, delta, largestArmy, knightsPlayed }: PlayerCardProps) {
+export function PlayerCard({ player, isActive, delta, largestArmy, knightsPlayed, compact = false }: PlayerCardProps) {
   const totalCards = Object.values(player.resources).reduce((a, b) => a + b, 0)
   const devCardsTotal = player.devCards.length + player.newDevCards.length
+
+  if (compact) {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          flex: '1 1 0', minWidth: 0,
+          border: `2px solid ${player.color}`,
+          borderRadius: 6,
+          padding: '4px 6px',
+          background: isActive ? player.color : 'rgba(20,20,30,0.75)',
+          opacity: isActive ? 1 : 0.75,
+          boxShadow: isActive ? `0 0 8px ${player.color}99` : undefined,
+          display: 'flex', flexDirection: 'column', gap: 2,
+          color: isActive ? '#fff' : undefined,
+        }}
+      >
+        <div style={{
+          fontWeight: 'bold',
+          color: isActive ? '#fff' : player.color,
+          fontSize: 12,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          textShadow: isActive ? '0 1px 2px rgba(0,0,0,0.4)' : undefined,
+        }}>
+          {player.name}
+        </div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 10, whiteSpace: 'nowrap' }}>
+          <span style={{ fontWeight: 'bold', color: '#fff' }}>⭐{player.vp}</span>
+          <span style={{ position: 'relative' }} title="Cartes">
+            🎴{totalCards}
+            {delta && (
+              <span style={{
+                position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
+                display: 'flex', gap: 2, animation: 'floatUp 2.2s ease forwards',
+                whiteSpace: 'nowrap',
+              }}>
+                {(Object.entries(delta) as Array<[Resource, number]>).map(([res, n]) => (
+                  <span key={res} style={{
+                    background: n > 0 ? '#27ae60' : '#c0392b',
+                    color: '#fff', padding: '1px 3px', borderRadius: 5,
+                    fontSize: 9, fontWeight: 'bold',
+                  }}>
+                    {n > 0 ? '+' : ''}{n}{RESOURCE_ICONS[res]}
+                  </span>
+                ))}
+              </span>
+            )}
+          </span>
+          {devCardsTotal > 0 && <span title="Cartes dév">✨{devCardsTotal}</span>}
+          {knightsPlayed > 0 && (
+            <span style={{ color: largestArmy ? '#f1c40f' : '#ccc' }} title="Chevaliers joués">
+              ⚔️{knightsPlayed}{largestArmy && '🏆'}
+            </span>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
       style={{
         position: 'relative',
-        border: `${isActive ? 4 : 2}px solid ${player.color}`,
+        border: `${isActive ? 4 : 3}px solid ${player.color}`,
         borderRadius: 12,
         padding: isActive ? '16px 18px' : '12px 16px',
-        background: isActive
-          ? `linear-gradient(135deg, ${player.color}44 0%, ${player.color}11 100%)`
-          : 'rgba(20,20,30,0.75)',
+        background: isActive ? player.color : 'rgba(20,20,30,0.75)',
+        color: isActive ? '#fff' : undefined,
         opacity: isActive ? 1 : 0.7,
         boxShadow: isActive ? `0 0 26px ${player.color}aa` : undefined,
         transition: 'all 0.25s ease',

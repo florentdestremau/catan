@@ -232,7 +232,11 @@ export function Board({ state, dispatch, selectedVertex, onSelectVertex }: Board
   const edgeArray = Object.values(board.edges)
 
   return (
-    <svg width={SVG_W} height={SVG_H} style={{ background: '#1a6496', display: 'block' }}>
+    <svg
+      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+      preserveAspectRatio="xMidYMid meet"
+      style={{ width: '100%', height: '100%', maxWidth: SVG_W, maxHeight: SVG_H, background: '#1a6496', display: 'block' }}
+    >
       <TerrainPatterns />
       {/* Hexes */}
       {hexArray.map(hex => {

@@ -45,6 +45,17 @@ function clearSavedState() {
   localStorage.removeItem(STORAGE_KEY)
 }
 
+function useIsMobile(): boolean {
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 820px)')
+    const h = () => setM(mq.matches)
+    mq.addEventListener('change', h)
+    return () => mq.removeEventListener('change', h)
+  }, [])
+  return m
+}
+
 export default function App() {
   const [initialState, setInitialState] = useState<GameState | null>(() => loadSavedState())
 
@@ -97,6 +108,7 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
     id: number
     byPlayer: Record<PlayerId, Partial<Record<Resource, number>>>
   } | null>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     saveState(state)
@@ -131,6 +143,10 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [state])
 
+  if (isMobile) {
+    return <MobileGame state={state} dispatch={dispatch} selectedVertex={selectedVertex} setSelectedVertex={setSelectedVertex} visibleDeltas={visibleDeltas} onReset={onReset} />
+  }
+
   const positions = POSITIONS[state.players.length] ?? POSITIONS[4]
 
   return (
@@ -144,12 +160,21 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
       <style>{playerKeyframes}</style>
 
       <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Board
-          state={state}
-          dispatch={dispatch}
-          selectedVertex={selectedVertex}
-          onSelectVertex={setSelectedVertex}
-        />
+        <div style={{
+          width: 900, height: 800,
+          border: `6px solid ${state.players[state.currentPlayerIndex].color}`,
+          borderRadius: 12,
+          boxShadow: `0 0 24px ${state.players[state.currentPlayerIndex].color}66`,
+          transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+          overflow: 'hidden',
+        }}>
+          <Board
+            state={state}
+            dispatch={dispatch}
+            selectedVertex={selectedVertex}
+            onSelectVertex={setSelectedVertex}
+          />
+        </div>
 
         {state.players.map((player, i) => {
           const pos = positions[i]
@@ -210,6 +235,121 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
 
       <div style={{ width: 300, padding: 12, overflowY: 'auto', borderLeft: '1px solid #333' }}>
         <Controls state={state} dispatch={dispatch} />
+      </div>
+
+      <GainOverlay state={state} />
+    </div>
+  )
+}
+
+interface MobileGameProps {
+  state: GameState
+  dispatch: (a: Parameters<typeof reducer>[1]) => void
+  selectedVertex: string | null
+  setSelectedVertex: (v: string | null) => void
+  visibleDeltas: { id: number; byPlayer: Record<PlayerId, Partial<Record<Resource, number>>> } | null
+  onReset: () => void
+}
+
+function MobileGame({ state, dispatch, selectedVertex, setSelectedVertex, visibleDeltas, onReset }: MobileGameProps) {
+  const current = state.players[state.currentPlayerIndex]
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      minHeight: '100vh',
+      background: '#0f0f1a',
+      color: '#eee',
+      fontFamily: 'sans-serif',
+    }}>
+      <style>{playerKeyframes}</style>
+
+      {/* Header sticky */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 10,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 10, padding: '8px 12px',
+        background: 'rgba(15,15,26,0.92)',
+        borderBottom: '1px solid #333',
+        backdropFilter: 'blur(6px)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span style={{ fontSize: 16, fontWeight: 'bold' }}>🏝️</span>
+          <span style={{
+            fontSize: 13, color: '#aaa',
+          }}>Tour :</span>
+          <span style={{
+            color: current.color, fontWeight: 'bold', fontSize: 15,
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
+            {current.name}
+          </span>
+        </div>
+        <button
+          onClick={() => { if (confirm('Abandonner la partie en cours ?')) onReset() }}
+          style={{
+            background: 'rgba(127,140,141,0.85)', color: '#fff', border: 'none',
+            borderRadius: 6, padding: '6px 10px', cursor: 'pointer', fontSize: 12,
+            flexShrink: 0,
+          }}
+        >
+          Nouvelle
+        </button>
+      </div>
+
+      {/* Player cards — ligne unique (2/3 joueurs) ou grille 2×2 (4 joueurs) */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: state.players.length === 4 ? '1fr 1fr' : `repeat(${state.players.length}, 1fr)`,
+        gap: 4, padding: '6px 8px',
+      }}>
+        {state.players.map((player, i) => (
+          <PlayerCard
+            key={player.id}
+            player={player}
+            isActive={i === state.currentPlayerIndex}
+            delta={visibleDeltas?.byPlayer[player.id]}
+            largestArmy={state.largestArmy === player.id}
+            knightsPlayed={player.knightsPlayed}
+            compact
+          />
+        ))}
+      </div>
+
+      {/* Plateau */}
+      <div style={{
+        width: '100%', padding: '0 4px',
+        display: 'flex', justifyContent: 'center',
+      }}>
+        <div style={{
+          width: '100%', maxWidth: 900, position: 'relative',
+          border: `4px solid ${current.color}`,
+          borderRadius: 10,
+          boxShadow: `0 0 16px ${current.color}66`,
+          transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+        }}>
+          <Board
+            state={state}
+            dispatch={dispatch}
+            selectedVertex={selectedVertex}
+            onSelectVertex={setSelectedVertex}
+          />
+        </div>
+      </div>
+
+      {/* Controls full width */}
+      <div style={{ padding: 10 }}>
+        <Controls state={state} dispatch={dispatch} isMobile />
+      </div>
+
+      {/* Log compact */}
+      <div style={{ padding: '0 10px 10px' }}>
+        <div style={{
+          maxHeight: 110, overflow: 'hidden',
+          background: 'rgba(15,15,26,0.7)',
+          borderRadius: 6, border: '1px solid #333',
+        }}>
+          <Log entries={state.log} />
+        </div>
       </div>
 
       <GainOverlay state={state} />

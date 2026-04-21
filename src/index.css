@@ -1,3 +1,10 @@
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; background: #0f0f1a; color: #eee; }
+html { touch-action: manipulation; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0f0f1a;
+  color: #eee;
+  -webkit-text-size-adjust: 100%;
+}
 #root { width: 100%; }
