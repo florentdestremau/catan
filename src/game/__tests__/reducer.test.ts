@@ -20,7 +20,7 @@ function skipSetup(state: GameState): GameState {
     )
     if (!vid) throw new Error(`Aucun sommet valide au tour ${turn}, phase ${s.phase}`)
     s = reducer(s, { type: 'PLACE_SETTLEMENT', vertexId: vid })
-    const pending = (s as any)._pendingSettlement
+    const pending = (s as GameState & { _pendingSettlement?: string })._pendingSettlement
     if (!pending) throw new Error(`Pas de _pendingSettlement après placement au tour ${turn}`)
     const eid = Object.keys(s.board.edges).find(
       e => s.board.edges[e].vertices.includes(pending) && !s.board.edges[e].road
@@ -55,7 +55,7 @@ describe('setup placement', () => {
     const s = makeState()
     const vids = Object.keys(s.board.vertices)
     const s2 = reducer(s, { type: 'PLACE_SETTLEMENT', vertexId: vids[0] })
-    const pending = (s2 as any)._pendingSettlement
+    const pending = (s2 as GameState & { _pendingSettlement?: string })._pendingSettlement
     if (!pending) return  // placement rejeté d'emblée
     const edgeId = Object.keys(s2.board.edges).find(
       eid => s2.board.edges[eid].vertices.includes(pending) && !s2.board.edges[eid].road
@@ -76,7 +76,7 @@ describe('setup placement', () => {
 
 describe('production de ressources', () => {
   it('les joueurs reçoivent des ressources sur le jet correspondant', () => {
-    let s = skipSetup(makeState(['Alice', 'Bob'], 42))
+    const s = skipSetup(makeState(['Alice', 'Bob'], 42))
     expect(s.phase).toBe('roll')
 
     // Trouver un hex numéroté avec une colonie, hors voleur
@@ -104,7 +104,8 @@ describe('production de ressources', () => {
     if (d2 < 1 || d2 > 6 || d1 < 1) return  // pas représentable, skip
 
     const beforeTotal = Object.values(s.players[ownerIdx].resources).reduce((a, b) => a + b, 0)
-    const s2 = reducer(s, { type: 'ROLL_DICE', dice: [d1 as any, d2 as any] })
+    type Die = 1|2|3|4|5|6
+    const s2 = reducer(s, { type: 'ROLL_DICE', dice: [d1 as Die, d2 as Die] })
     const afterTotal = Object.values(s2.players[ownerIdx].resources).reduce((a, b) => a + b, 0)
     expect(afterTotal).toBeGreaterThan(beforeTotal)
   })

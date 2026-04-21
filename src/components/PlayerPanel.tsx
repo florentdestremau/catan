@@ -21,47 +21,46 @@ export function PlayerCard({ player, isActive, delta, largestArmy, knightsPlayed
     <div
       style={{
         position: 'relative',
-        border: `${isActive ? 3 : 1}px solid ${player.color}`,
-        borderRadius: 10,
-        padding: isActive ? '10px 14px' : '8px 12px',
+        border: `${isActive ? 4 : 2}px solid ${player.color}`,
+        borderRadius: 12,
+        padding: isActive ? '16px 18px' : '12px 16px',
         background: isActive
           ? `linear-gradient(135deg, ${player.color}44 0%, ${player.color}11 100%)`
           : 'rgba(20,20,30,0.75)',
         opacity: isActive ? 1 : 0.7,
-        boxShadow: isActive ? `0 0 20px ${player.color}88` : undefined,
+        boxShadow: isActive ? `0 0 26px ${player.color}aa` : undefined,
         transition: 'all 0.25s ease',
-        minWidth: 180,
         backdropFilter: 'blur(4px)',
       }}
     >
       {isActive && (
         <div style={{
           position: 'absolute',
-          top: -1, left: -1, right: -1,
-          height: 4,
+          top: -2, left: -2, right: -2,
+          height: 6,
           background: player.color,
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
         }} />
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <span style={{
           fontWeight: 'bold',
           color: player.color,
-          fontSize: isActive ? 18 : 15,
-          textShadow: isActive ? `0 0 8px ${player.color}88` : undefined,
+          fontSize: isActive ? 24 : 20,
+          textShadow: isActive ? `0 0 12px ${player.color}aa` : undefined,
         }}>
           {player.name}
         </span>
         <span style={{
-          fontSize: 14, fontWeight: 'bold',
-          background: '#222', borderRadius: 12,
-          padding: '2px 8px', border: '1px solid #444',
+          fontSize: 17, fontWeight: 'bold',
+          background: '#222', borderRadius: 14,
+          padding: '4px 12px', border: '1px solid #444',
         }}>
           ⭐ {player.vp}
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: 15, flexWrap: 'wrap' }}>
         <span title="Cartes ressources en main" style={{ position: 'relative' }}>
           🎴 <strong>{totalCards}</strong>
           {delta && (
@@ -111,9 +110,11 @@ export function PlayerPanel({ state }: PlayerPanelProps) {
 
   useEffect(() => {
     if (!lastDeltas) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVisibleDeltas(lastDeltas)
     const timer = setTimeout(() => setVisibleDeltas(null), 2400)
     return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastDeltas?.id])
 
   return (

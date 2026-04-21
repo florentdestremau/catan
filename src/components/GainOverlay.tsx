@@ -20,9 +20,11 @@ export function GainOverlay({ state }: GainOverlayProps) {
 
   useEffect(() => {
     if (!state.lastDeltas) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShow(state.lastDeltas)
     const t = setTimeout(() => setShow(undefined), 2200)
     return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.lastDeltas?.id])
 
   if (!show) return null

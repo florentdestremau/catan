@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { GameState, Resource, DevCardKind } from '../game/types'
 import type { GameAction } from '../game/actions'
 import { totalCards, canAfford, COSTS, isRoadPlacementValid, isSettlementPlacementValid } from '../game/rules'
+import { canBuildAnything } from '../game/checks'
 
 const DEV_META: Record<DevCardKind, { label: string; icon: string; color: string; desc: string }> = {
   knight:         { label: 'Chevalier',        icon: '⚔️',  color: '#c0392b', desc: 'Déplace le voleur et vole une carte' },
@@ -88,7 +89,7 @@ export function Controls({ state, dispatch }: ControlsProps) {
           {currentPlayer.name}
         </div>
         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', marginTop: 2 }}>
-          {phaseLabel(phase, state)}
+          {phaseLabel(phase)}
         </div>
       </div>
 
@@ -260,18 +261,6 @@ export function Controls({ state, dispatch }: ControlsProps) {
   )
 }
 
-export function canBuildAnything(state: GameState): boolean {
-  const current = state.players[state.currentPlayerIndex]
-  const canRoad = canAfford(current.resources, COSTS.road) && current.pieces.roads > 0
-    && Object.keys(state.board.edges).some(eid => isRoadPlacementValid(state, eid, current.id))
-  if (canRoad) return true
-  const canSettlement = canAfford(current.resources, COSTS.settlement) && current.pieces.settlements > 0
-    && Object.keys(state.board.vertices).some(vid => isSettlementPlacementValid(state, vid, true, current.id))
-  if (canSettlement) return true
-  const canCity = canAfford(current.resources, COSTS.city) && current.pieces.cities > 0
-    && Object.values(state.board.vertices).some(v => v.building?.owner === current.id && v.building.type === 'settlement')
-  return canCity
-}
 
 function BuildPanel({ state, dispatch }: { state: GameState; dispatch: (action: GameAction) => void }) {
   const current = state.players[state.currentPlayerIndex]
@@ -479,93 +468,182 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
         <div style={{ fontSize: 11, color: '#666', fontStyle: 'italic' }}>Aucune carte</div>
       )}
 
-      {playableKinds.map(kind => {
-        const meta = DEV_META[kind]
-        return (
-          <div key={kind} style={{
-            background: `${meta.color}33`,
-            border: `1px solid ${meta.color}`,
-            borderRadius: 6, padding: '6px 8px', marginBottom: 6,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
-              <div style={{ fontSize: 12, fontWeight: 'bold' }}>
-                {meta.icon} {meta.label} {playable[kind] > 1 && <span style={{ color: '#bbb' }}>×{playable[kind]}</span>}
-              </div>
-              {kind !== 'year_of_plenty' && kind !== 'monopoly' && (
-                <button
-                  disabled={!canPlayDev}
-                  onClick={() => {
-                    if (kind === 'knight') dispatch({ type: 'PLAY_KNIGHT' })
-                    else if (kind === 'road_building') dispatch({ type: 'PLAY_ROAD_BUILDING' })
-                  }}
-                  style={{
-                    background: canPlayDev ? meta.color : '#444',
-                    color: '#fff', border: 'none', borderRadius: 4, padding: '3px 8px',
-                    fontSize: 11, fontWeight: 'bold', cursor: canPlayDev ? 'pointer' : 'not-allowed',
-                    opacity: canPlayDev ? 1 : 0.5,
-                  }}
-                >
-                  Jouer
-                </button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {playableKinds.map(kind => {
+          const meta = DEV_META[kind]
+          const count = playable[kind]
+          const playAction =
+            kind === 'knight' ? () => dispatch({ type: 'PLAY_KNIGHT' }) :
+            kind === 'road_building' ? () => dispatch({ type: 'PLAY_ROAD_BUILDING' }) :
+            kind === 'year_of_plenty' ? () => dispatch({ type: 'PLAY_YEAR_OF_PLENTY', resources: [yopR1, yopR2] }) :
+            kind === 'monopoly' ? () => dispatch({ type: 'PLAY_MONOPOLY', resource: monoRes }) :
+            undefined
+
+          return (
+            <div key={kind} style={{
+              position: 'relative',
+              background: `linear-gradient(180deg, ${meta.color}dd 0%, ${meta.color}77 40%, #1a1a24 40%, #1a1a24 100%)`,
+              border: `2px solid ${meta.color}`,
+              borderRadius: 10,
+              overflow: 'hidden',
+              boxShadow: `0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset`,
+            }}>
+              {count > 1 && (
+                <div style={{
+                  position: 'absolute', top: 6, right: 6,
+                  background: '#000', color: '#fff',
+                  borderRadius: 12, padding: '2px 8px',
+                  fontSize: 11, fontWeight: 'bold',
+                  border: `1px solid ${meta.color}`,
+                  zIndex: 2,
+                }}>
+                  ×{count}
+                </div>
               )}
+
+              <div style={{
+                padding: '10px 10px 8px',
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
+                <div style={{
+                  fontSize: 28, lineHeight: 1,
+                  width: 44, height: 44,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.25)',
+                  borderRadius: 8,
+                  border: '1px solid rgba(255,255,255,0.2)',
+                }}>
+                  {meta.icon}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                    {meta.label}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+                    {meta.desc}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ padding: '6px 10px 10px', display: 'flex', gap: 6, alignItems: 'center' }}>
+                {kind === 'year_of_plenty' && (
+                  <>
+                    <ResourceSelect value={yopR1} onChange={setYopR1} />
+                    <ResourceSelect value={yopR2} onChange={setYopR2} />
+                  </>
+                )}
+                {kind === 'monopoly' && <ResourceSelect value={monoRes} onChange={setMonoRes} />}
+                <button
+                  disabled={!canPlayDev || !playAction}
+                  onClick={playAction}
+                  style={{
+                    flex: 1,
+                    background: canPlayDev ? meta.color : '#333',
+                    color: '#fff', border: 'none', borderRadius: 6,
+                    padding: '6px 10px', fontSize: 12, fontWeight: 'bold',
+                    cursor: canPlayDev ? 'pointer' : 'not-allowed',
+                    opacity: canPlayDev ? 1 : 0.5,
+                    textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                    boxShadow: canPlayDev ? `0 2px 6px ${meta.color}66` : undefined,
+                  }}
+                >
+                  ▶ Jouer
+                </button>
+              </div>
             </div>
-            <div style={{ fontSize: 10, color: '#bbb', marginTop: 2 }}>{meta.desc}</div>
+          )
+        })}
 
-            {kind === 'year_of_plenty' && (
-              <div style={{ display: 'flex', gap: 4, marginTop: 6, alignItems: 'center' }}>
-                <ResourceSelect value={yopR1} onChange={setYopR1} />
-                <ResourceSelect value={yopR2} onChange={setYopR2} />
-                <button
-                  disabled={!canPlayDev}
-                  onClick={() => dispatch({ type: 'PLAY_YEAR_OF_PLENTY', resources: [yopR1, yopR2] })}
-                  style={{
-                    background: canPlayDev ? meta.color : '#444', color: '#fff', border: 'none',
-                    borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 'bold',
-                    cursor: canPlayDev ? 'pointer' : 'not-allowed', opacity: canPlayDev ? 1 : 0.5,
-                  }}
-                >
-                  Jouer
-                </button>
+        {/* Carte Point de Victoire (auto) */}
+        {playable.vp > 0 && (
+          <div style={{
+            position: 'relative',
+            background: `linear-gradient(180deg, ${DEV_META.vp.color}dd 0%, ${DEV_META.vp.color}77 40%, #1a1a24 40%, #1a1a24 100%)`,
+            border: `2px solid ${DEV_META.vp.color}`,
+            borderRadius: 10,
+            overflow: 'hidden',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+          }}>
+            {playable.vp > 1 && (
+              <div style={{
+                position: 'absolute', top: 6, right: 6,
+                background: '#000', color: '#fff',
+                borderRadius: 12, padding: '2px 8px',
+                fontSize: 11, fontWeight: 'bold',
+                border: `1px solid ${DEV_META.vp.color}`,
+              }}>
+                ×{playable.vp}
               </div>
             )}
-
-            {kind === 'monopoly' && (
-              <div style={{ display: 'flex', gap: 4, marginTop: 6, alignItems: 'center' }}>
-                <ResourceSelect value={monoRes} onChange={setMonoRes} />
-                <button
-                  disabled={!canPlayDev}
-                  onClick={() => dispatch({ type: 'PLAY_MONOPOLY', resource: monoRes })}
-                  style={{
-                    background: canPlayDev ? meta.color : '#444', color: '#fff', border: 'none',
-                    borderRadius: 4, padding: '3px 8px', fontSize: 11, fontWeight: 'bold',
-                    cursor: canPlayDev ? 'pointer' : 'not-allowed', opacity: canPlayDev ? 1 : 0.5,
-                  }}
-                >
-                  Jouer
-                </button>
+            <div style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                fontSize: 28, lineHeight: 1,
+                width: 44, height: 44,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.25)',
+                borderRadius: 8,
+                border: '1px solid rgba(255,255,255,0.2)',
+              }}>
+                ⭐
               </div>
-            )}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                  Point{playable.vp > 1 ? 's' : ''} de Victoire
+                </div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+                  Compté{playable.vp > 1 ? 's' : ''} automatiquement dans vos PV
+                </div>
+              </div>
+            </div>
           </div>
-        )
-      })}
+        )}
 
-      {/* VP cartes (juste info) */}
-      {playable.vp > 0 && (
-        <div style={{
-          background: `${DEV_META.vp.color}33`, border: `1px solid ${DEV_META.vp.color}`,
-          borderRadius: 6, padding: '4px 8px', marginBottom: 6, fontSize: 11,
-        }}>
-          ⭐ Points de victoire ×{playable.vp} <span style={{ color: '#bbb' }}>(auto)</span>
-        </div>
-      )}
-
-      {/* Cartes achetées ce tour (injouables) */}
-      {newKindsToShow.length > 0 && (
-        <div style={{ fontSize: 11, color: '#888', fontStyle: 'italic', marginTop: 4 }}>
-          🕒 Achetée{current.newDevCards.length > 1 ? 's' : ''} ce tour (jouable{current.newDevCards.length > 1 ? 's' : ''} au tour suivant) :{' '}
-          {newKindsToShow.map(k => `${DEV_META[k].icon}${newByKind[k] > 1 ? `×${newByKind[k]}` : ''}`).join(' ')}
-        </div>
-      )}
+        {/* Cartes achetées ce tour (dos de carte) */}
+        {newKindsToShow.map(kind => {
+          const meta = DEV_META[kind]
+          const count = newByKind[kind]
+          return (
+            <div key={`new-${kind}`} style={{
+              position: 'relative',
+              background: 'repeating-linear-gradient(45deg, #1e1e2a, #1e1e2a 8px, #282838 8px, #282838 16px)',
+              border: `2px dashed ${meta.color}aa`,
+              borderRadius: 10,
+              padding: '10px',
+              display: 'flex', alignItems: 'center', gap: 10,
+              opacity: 0.85,
+            }}>
+              {count > 1 && (
+                <div style={{
+                  position: 'absolute', top: 6, right: 6,
+                  background: '#000', color: '#fff',
+                  borderRadius: 12, padding: '2px 8px',
+                  fontSize: 11, fontWeight: 'bold',
+                  border: `1px solid ${meta.color}`,
+                }}>
+                  ×{count}
+                </div>
+              )}
+              <div style={{
+                fontSize: 22, width: 44, height: 44,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: '#0f0f1a', borderRadius: 8,
+                border: `1px solid ${meta.color}66`,
+                filter: 'grayscale(0.6)',
+              }}>
+                🕒
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 'bold', color: '#ddd' }}>
+                  {meta.icon} {meta.label}
+                </div>
+                <div style={{ fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 2 }}>
+                  Achetée ce tour · jouable au tour suivant
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
 
       {current.hasPlayedDevCard && (
         <div style={{ fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 4 }}>
@@ -629,7 +707,7 @@ const btnStyle: React.CSSProperties = {
   width: '100%',
 }
 
-function phaseLabel(phase: string, _state: GameState): string {
+function phaseLabel(phase: string): string {
   switch (phase) {
     case 'setup1': return 'Placement (phase 1) — posez une colonie'
     case 'setup2': return 'Placement (phase 2) — posez une colonie'
