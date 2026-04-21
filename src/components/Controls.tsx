@@ -482,19 +482,19 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
           return (
             <div key={kind} style={{
               position: 'relative',
-              background: `linear-gradient(180deg, ${meta.color}dd 0%, ${meta.color}77 40%, #1a1a24 40%, #1a1a24 100%)`,
-              border: `2px solid ${meta.color}`,
-              borderRadius: 10,
+              background: '#1a1a24',
+              border: `1px solid ${meta.color}66`,
+              borderLeft: `4px solid ${meta.color}`,
+              borderRadius: 8,
               overflow: 'hidden',
-              boxShadow: `0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset`,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
             }}>
               {count > 1 && (
                 <div style={{
                   position: 'absolute', top: 6, right: 6,
-                  background: '#000', color: '#fff',
-                  borderRadius: 12, padding: '2px 8px',
+                  background: meta.color, color: '#fff',
+                  borderRadius: 10, padding: '1px 7px',
                   fontSize: 11, fontWeight: 'bold',
-                  border: `1px solid ${meta.color}`,
                   zIndex: 2,
                 }}>
                   ×{count}
@@ -506,26 +506,26 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
                 <div style={{
-                  fontSize: 28, lineHeight: 1,
-                  width: 44, height: 44,
+                  fontSize: 24, lineHeight: 1,
+                  width: 38, height: 38,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(0,0,0,0.25)',
+                  background: `${meta.color}22`,
                   borderRadius: 8,
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  border: `1px solid ${meta.color}55`,
                 }}>
                   {meta.icon}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                  <div style={{ fontSize: 14, fontWeight: 'bold', color: meta.color }}>
                     {meta.label}
                   </div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>
                     {meta.desc}
                   </div>
                 </div>
               </div>
 
-              <div style={{ padding: '6px 10px 10px', display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div style={{ padding: '0 10px 10px', display: 'flex', gap: 6, alignItems: 'center' }}>
                 {kind === 'year_of_plenty' && (
                   <>
                     <ResourceSelect value={yopR1} onChange={setYopR1} />
@@ -558,39 +558,39 @@ function DevCardsPanel({ state, dispatch }: { state: GameState; dispatch: (actio
         {playable.vp > 0 && (
           <div style={{
             position: 'relative',
-            background: `linear-gradient(180deg, ${DEV_META.vp.color}dd 0%, ${DEV_META.vp.color}77 40%, #1a1a24 40%, #1a1a24 100%)`,
-            border: `2px solid ${DEV_META.vp.color}`,
-            borderRadius: 10,
+            background: '#1a1a24',
+            border: `1px solid ${DEV_META.vp.color}66`,
+            borderLeft: `4px solid ${DEV_META.vp.color}`,
+            borderRadius: 8,
             overflow: 'hidden',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
           }}>
             {playable.vp > 1 && (
               <div style={{
                 position: 'absolute', top: 6, right: 6,
-                background: '#000', color: '#fff',
-                borderRadius: 12, padding: '2px 8px',
+                background: DEV_META.vp.color, color: '#000',
+                borderRadius: 10, padding: '1px 7px',
                 fontSize: 11, fontWeight: 'bold',
-                border: `1px solid ${DEV_META.vp.color}`,
               }}>
                 ×{playable.vp}
               </div>
             )}
             <div style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
-                fontSize: 28, lineHeight: 1,
-                width: 44, height: 44,
+                fontSize: 24, lineHeight: 1,
+                width: 38, height: 38,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(0,0,0,0.25)',
+                background: `${DEV_META.vp.color}22`,
                 borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.2)',
+                border: `1px solid ${DEV_META.vp.color}55`,
               }}>
                 ⭐
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 'bold', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                <div style={{ fontSize: 14, fontWeight: 'bold', color: DEV_META.vp.color }}>
                   Point{playable.vp > 1 ? 's' : ''} de Victoire
                 </div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>
+                <div style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>
                   Compté{playable.vp > 1 ? 's' : ''} automatiquement dans vos PV
                 </div>
               </div>
