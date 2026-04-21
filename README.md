@@ -1,73 +1,60 @@
-# React + TypeScript + Vite
+# 🏝️ Catan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Adaptation **hotseat** des Colons de Catan pour 2-4 joueurs sur le même écran, en React + TypeScript + Vite. Jouable en ligne sur **[catan.once.florent.cc](https://catan.once.florent.cc)**.
 
-Currently, two official plugins are available:
+![Aperçu desktop](./public/screenshot-game.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Fonctionnalités
 
-## React Compiler
+- 2 à 4 joueurs sur le même écran, pseudo hotseat
+- Placement initial en serpent (2 colonies + 2 routes)
+- Production sur jet de dés, voleur sur un 7, défausse >7 cartes, vol
+- Construction : route, colonie, ville, carte dév
+- Cartes dév : chevalier, abondance (année de plenty), monopole, construction de routes, point de victoire
+- Plus grande armée (+2 PV dès 3 chevaliers joués)
+- Échange 4:1 avec la banque
+- Victoire à 10 PV
+- Sauvegarde locale automatique (`localStorage`)
+- **Responsive** : layout desktop (sidebar) + layout mobile (modale ressources, plateau fluide)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Non inclus : ports, commerce entre joueurs, plus longue route.
 
-## Expanding the ESLint configuration
+## Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19 + TypeScript
+- Vite 8
+- Vitest (tests du reducer + des règles)
+- ESLint
+- Zéro dépendance applicative (pas de lib de jeu, le moteur est fait main)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run test       # tests vitest
+npm run lint
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Fixture de démo
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+URL avec `?fixture=mid` pour charger un état "milieu de partie" (utile pour screenshots / démo sans passer par le setup) :
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+http://localhost:5173/?fixture=mid
+```
+
+## Déploiement
+
+Image Docker publiée en CI sur `ghcr.io/florentdestremau/catan:master`, déployée via [once](https://once.florent.cc) :
+
+```bash
+once update catan.once.florent.cc --image ghcr.io/florentdestremau/catan:master
+```
+
+## Structure
+
+- `src/game/` — moteur pur (types, règles, reducer, setup, fixtures)
+- `src/components/` — UI React (Board SVG, PlayerPanel, Controls, ResourcesModal, Setup, Log, GainOverlay)
+- `src/App.tsx` — assemblage + hook `useIsMobile` pour la branche mobile
