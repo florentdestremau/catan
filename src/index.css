@@ -1,3 +1,3 @@
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; background: #0f0f1a; color: #eee; font-size: 17px; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #0f0f1a; color: #eee; }
 #root { width: 100%; }

@@ -8,12 +8,17 @@ import { Setup } from './components/Setup'
 import { GainOverlay } from './components/GainOverlay'
 import { reducer } from './game/reducer'
 import { createInitialState } from './game/setup'
+import { buildMidGameFixture } from './game/fixtures'
 import type { GameState, Resource, PlayerId } from './game/types'
 
 const STORAGE_KEY = 'catan:state:v2'
 
 function loadSavedState(): GameState | null {
   try {
+    // Fixture pour screenshots / vitrine : ?fixture=mid
+    const params = new URLSearchParams(location.search)
+    if (params.get('fixture') === 'mid') return buildMidGameFixture()
+
     localStorage.removeItem('catan:state:v1')
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
@@ -176,7 +181,7 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
           gap: 6,
         }}>
           <h3 style={{
-            margin: 0, fontSize: 20, color: '#ddd',
+            margin: 0, fontSize: 15, color: '#ddd',
             background: 'rgba(15,15,26,0.7)', borderRadius: 6,
             padding: '4px 10px', backdropFilter: 'blur(4px)',
             border: '1px solid #333',
@@ -194,7 +199,7 @@ function Game({ initialState, onReset }: { initialState: GameState; onReset: () 
           <button
             style={{
               background: 'rgba(127,140,141,0.85)', color: '#fff', border: 'none',
-              borderRadius: 6, padding: 6, cursor: 'pointer', fontSize: 16,
+              borderRadius: 6, padding: 6, cursor: 'pointer', fontSize: 12,
             }}
             onClick={() => { if (confirm('Abandonner la partie en cours ?')) onReset() }}
           >

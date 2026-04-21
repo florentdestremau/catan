@@ -53,14 +53,14 @@ export function PlayerCard({ player, isActive, delta, largestArmy, knightsPlayed
           {player.name}
         </span>
         <span style={{
-          fontSize: 22, fontWeight: 'bold',
+          fontSize: 17, fontWeight: 'bold',
           background: '#222', borderRadius: 14,
           padding: '4px 12px', border: '1px solid #444',
         }}>
           ⭐ {player.vp}
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: 20, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', fontSize: 15, flexWrap: 'wrap' }}>
         <span title="Cartes ressources en main" style={{ position: 'relative' }}>
           🎴 <strong>{totalCards}</strong>
           {delta && (
@@ -73,7 +73,7 @@ export function PlayerCard({ player, isActive, delta, largestArmy, knightsPlayed
                 <span key={res} style={{
                   background: n > 0 ? '#27ae60' : '#c0392b',
                   color: '#fff', padding: '2px 5px', borderRadius: 8,
-                  fontSize: 14, fontWeight: 'bold',
+                  fontSize: 11, fontWeight: 'bold',
                 }}>
                   {n > 0 ? '+' : ''}{n}{RESOURCE_ICONS[res]}
                 </span>

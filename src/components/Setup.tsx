@@ -20,19 +20,30 @@ export function Setup({ onStart }: SetupProps) {
     }}>
       <div style={{
         display: 'flex', gap: 32, alignItems: 'stretch',
-        maxWidth: 900, width: '100%', flexWrap: 'wrap', justifyContent: 'center',
+        maxWidth: 1180, width: '100%', flexWrap: 'wrap', justifyContent: 'center',
       }}>
         <div style={{
           flex: '1 1 380px', maxWidth: 460,
           background: 'rgba(22,33,62,0.6)', border: '1px solid #2a3a5a',
           borderRadius: 16, padding: 28, backdropFilter: 'blur(6px)',
         }}>
-          <h1 style={{ margin: '0 0 12px', fontSize: 42 }}>🏝️ Catan</h1>
+          <h1 style={{ margin: '0 0 12px', fontSize: 32 }}>🏝️ Catan</h1>
           <p style={{ margin: '0 0 14px', lineHeight: 1.5, color: '#cfd8e3' }}>
             Une adaptation hotseat (2-4 joueurs sur le même écran) des <strong>Colons de Catan</strong>,
             implémentée en React + TypeScript. Partie rapide, sauvegarde locale automatique.
           </p>
-          <h3 style={{ margin: '18px 0 8px', fontSize: 20, color: '#e67e22', textTransform: 'uppercase', letterSpacing: 1 }}>
+
+          <img
+            src="/screenshot-game.png"
+            alt="Aperçu du jeu en cours"
+            style={{
+              width: '100%', borderRadius: 10, border: '1px solid #2a3a5a',
+              margin: '8px 0 18px', display: 'block',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+            }}
+          />
+
+          <h3 style={{ margin: '18px 0 8px', fontSize: 15, color: '#e67e22', textTransform: 'uppercase', letterSpacing: 1 }}>
             Règles couvertes
           </h3>
           <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.7, color: '#cfd8e3' }}>
@@ -45,7 +56,7 @@ export function Setup({ onStart }: SetupProps) {
             <li>Échange 4:1 avec la banque</li>
             <li>Victoire à <strong>10 PV</strong></li>
           </ul>
-          <p style={{ margin: '16px 0 0', fontSize: 16, color: '#7a8a9a' }}>
+          <p style={{ margin: '16px 0 0', fontSize: 12, color: '#7a8a9a' }}>
             Non inclus : ports, commerce entre joueurs, plus longue route.
           </p>
         </div>
@@ -54,9 +65,9 @@ export function Setup({ onStart }: SetupProps) {
           flex: '0 1 340px',
           background: '#16213e', borderRadius: 16, padding: 28, alignSelf: 'flex-start',
         }}>
-          <h2 style={{ margin: '0 0 20px', textAlign: 'center', fontSize: 29 }}>Nouvelle partie</h2>
+          <h2 style={{ margin: '0 0 20px', textAlign: 'center', fontSize: 22 }}>Nouvelle partie</h2>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: 18 }}>Nombre de joueurs</label>
+            <label style={{ display: 'block', marginBottom: 6, fontSize: 14 }}>Nombre de joueurs</label>
             <div style={{ display: 'flex', gap: 8 }}>
               {[2, 3, 4].map(n => (
                 <button key={n}
@@ -70,7 +81,7 @@ export function Setup({ onStart }: SetupProps) {
           </div>
           {Array.from({ length: count }, (_, i) => (
             <div key={i} style={{ marginBottom: 10 }}>
-              <label style={{ display: 'block', marginBottom: 4, fontSize: 17 }}>Joueur {i + 1}</label>
+              <label style={{ display: 'block', marginBottom: 4, fontSize: 13 }}>Joueur {i + 1}</label>
               <input
                 value={names[i]}
                 onChange={e => updateName(i, e.target.value)}
@@ -84,7 +95,7 @@ export function Setup({ onStart }: SetupProps) {
           <button
             style={{
               width: '100%', padding: '10px', marginTop: 16, borderRadius: 8, border: 'none',
-              background: '#27ae60', color: '#fff', fontSize: 21, fontWeight: 'bold', cursor: 'pointer',
+              background: '#27ae60', color: '#fff', fontSize: 16, fontWeight: 'bold', cursor: 'pointer',
             }}
             onClick={() => onStart(names.slice(0, count))}
           >
