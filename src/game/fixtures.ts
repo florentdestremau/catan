@@ -6,8 +6,9 @@ import { isSettlementPlacementValid } from './rules'
 // Construit un état de partie "milieu de partie" réaliste, pour vitrine/screenshot.
 // Pas de hasard : on parcourt le setup en choisissant le premier emplacement valide,
 // puis on force quelques ressources et constructions.
-export function buildMidGameFixture(): GameState {
-  let s = createInitialState(['Alice', 'Bob', 'Claire'], 7)
+export function buildMidGameFixture(seed?: number): GameState {
+  const actualSeed = seed ?? Math.floor(Math.random() * 100000)
+  let s = createInitialState(['Alice', 'Bob', 'Claire'], actualSeed)
   const n = s.players.length
 
   // Setup serpent : 2n tours (colonie + route par tour)

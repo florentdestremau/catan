@@ -128,10 +128,10 @@ export function Setup({ onStart }: SetupProps) {
               background: 'transparent', color: '#a0b0c5',
               fontSize: 13, cursor: 'pointer',
             }}
-            onClick={() => { location.href = '?fixture=mid' }}
-            title="Charger une partie déjà en cours pour tester / faire des captures"
+            onClick={() => { location.href = `?fixture=mid&t=${Date.now()}` }}
+            title="Charge un plateau aléatoire en milieu de partie pour tester rapidement"
           >
-            🧪 Démo : partie en cours
+            🧪 Démo : partie en cours (aléatoire)
           </button>
         </div>
 
