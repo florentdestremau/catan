@@ -6,13 +6,42 @@ import { canBuildAnything } from './game/checks'
 import { Log } from './components/Log'
 import { Home } from './components/Home'
 import { Lobby } from './components/Lobby'
+import { Setup } from './components/Setup'
 import { GainOverlay } from './components/GainOverlay'
 import { reducer } from './game/reducer'
+import { createInitialState } from './game/setup'
 import { buildMidGameFixture } from './game/fixtures'
 import { useRoom } from './net/useRoom'
 import { loadCreds, clearCreds, joinRoomApi, saveCreds } from './net/api'
 import type { GameState, Resource, PlayerId } from './game/types'
 import type { GameAction } from './game/actions'
+
+const HOTSEAT_STORAGE_KEY = 'catan:state:v2'
+
+function loadHotseatState(): GameState | null {
+  try {
+    localStorage.removeItem('catan:state:v1')
+    const raw = localStorage.getItem(HOTSEAT_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as GameState
+    if (!parsed.devDeck || !parsed.players?.every(p => Array.isArray(p.devCards))) {
+      localStorage.removeItem(HOTSEAT_STORAGE_KEY)
+      return null
+    }
+    return parsed
+  } catch {
+    localStorage.removeItem(HOTSEAT_STORAGE_KEY)
+    return null
+  }
+}
+
+function saveHotseatState(state: GameState) {
+  try { localStorage.setItem(HOTSEAT_STORAGE_KEY, JSON.stringify(state)) } catch { /* ignore */ }
+}
+
+function clearHotseatState() {
+  localStorage.removeItem(HOTSEAT_STORAGE_KEY)
+}
 
 function useIsMobile(): boolean {
   const [m, setM] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches)
@@ -25,19 +54,19 @@ function useIsMobile(): boolean {
   return m
 }
 
-// ---- Entrée : détermine le flow (demo hotseat via ?fixture=mid, sinon multijoueur)
+// ---- Entrée : routeur 3 modes — fixture demo / hotseat / multijoueur
 export default function App() {
   const params = new URLSearchParams(location.search)
   const fixtureMode = params.get('fixture') === 'mid'
+  const [mode, setMode] = useState<'multiplayer' | 'hotseat'>('multiplayer')
 
-  if (fixtureMode) {
-    return <HotseatDemo />
-  }
-  return <MultiplayerRoot />
+  if (fixtureMode) return <HotseatFixtureDemo />
+  if (mode === 'hotseat') return <HotseatRoot onExit={() => setMode('multiplayer')} />
+  return <MultiplayerRoot onStartHotseat={() => setMode('hotseat')} />
 }
 
-// ---- Mode hotseat local (démo fixture) ----
-function HotseatDemo() {
+// ---- Mode hotseat local (démo fixture seulement via ?fixture=mid) ----
+function HotseatFixtureDemo() {
   const [initial] = useState<GameState>(() => buildMidGameFixture())
   const [state, dispatch] = useReducer(reducer, initial)
   const [selectedVertex, setSelectedVertex] = useState<string | null>(null)
@@ -54,12 +83,49 @@ function HotseatDemo() {
   )
 }
 
+// ---- Mode hotseat local (vrai — Setup + save auto) ----
+function HotseatRoot({ onExit }: { onExit: () => void }) {
+  const [initialState, setInitialState] = useState<GameState | null>(() => loadHotseatState())
+
+  if (!initialState) {
+    return <Setup onStart={names => {
+      const s = createInitialState(names)
+      saveHotseatState(s)
+      setInitialState(s)
+    }} />
+  }
+  return <HotseatPlay
+    initialState={initialState}
+    onReset={() => { clearHotseatState(); onExit() }}
+  />
+}
+
+function HotseatPlay({ initialState, onReset }: { initialState: GameState; onReset: () => void }) {
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const [selectedVertex, setSelectedVertex] = useState<string | null>(null)
+
+  useEffect(() => { saveHotseatState(state) }, [state])
+
+  return (
+    <GameView
+      state={state}
+      dispatch={dispatch}
+      selectedVertex={selectedVertex}
+      setSelectedVertex={setSelectedVertex}
+      myPlayerId={state.players[state.currentPlayerIndex].id}
+      onLeave={onReset}
+      hotseat
+    />
+  )
+}
+
 // ---- Mode multijoueur en ligne ----
 type Creds = { roomId: string; token: string; playerId: string }
 
-function MultiplayerRoot() {
+function MultiplayerRoot({ onStartHotseat }: { onStartHotseat: () => void }) {
   const [creds, setCreds] = useState<Creds | null>(() => detectInitialCreds())
   const [autoError, setAutoError] = useState<string | null>(null)
+  const [hasHotseatSave] = useState<boolean>(() => loadHotseatState() !== null)
 
   // Détecte un ?join=ROOMID : rejoindre automatiquement si pas encore de creds
   useEffect(() => {
@@ -83,10 +149,14 @@ function MultiplayerRoot() {
     return (
       <>
         {autoError && <Banner message={autoError} />}
-        <Home onJoined={roomId => {
-          const c = loadCreds(roomId)
-          if (c) setCreds(c)
-        }} />
+        <Home
+          onJoined={roomId => {
+            const c = loadCreds(roomId)
+            if (c) setCreds(c)
+          }}
+          onStartHotseat={onStartHotseat}
+          hasHotseatSave={hasHotseatSave}
+        />
       </>
     )
   }

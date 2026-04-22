@@ -3,9 +3,11 @@ import { createRoomApi, joinRoomApi, saveCreds } from '../net/api'
 
 interface HomeProps {
   onJoined: (roomId: string) => void
+  onStartHotseat: () => void
+  hasHotseatSave: boolean
 }
 
-export function Home({ onJoined }: HomeProps) {
+export function Home({ onJoined, onStartHotseat, hasHotseatSave }: HomeProps) {
   const params = new URLSearchParams(location.search)
   const initialJoin = (params.get('join') ?? '').toUpperCase()
   const [mode, setMode] = useState<'menu' | 'create' | 'join'>(initialJoin ? 'join' : 'menu')
@@ -81,12 +83,9 @@ export function Home({ onJoined }: HomeProps) {
               <button style={btnSecondary} onClick={() => setMode('join')}>
                 🔗 Rejoindre avec un code
               </button>
-              <a
-                href="https://catan.once.florent.cc"
-                style={{ ...btnGhost, display: 'block', textDecoration: 'none', textAlign: 'center' as const }}
-              >
-                🎮 Mode hotseat (local)
-              </a>
+              <button style={btnSecondary} onClick={onStartHotseat}>
+                🎮 {hasHotseatSave ? 'Reprendre la partie locale' : 'Partie locale (hotseat)'}
+              </button>
             </>
           )}
 
