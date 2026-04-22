@@ -12,6 +12,7 @@ import { reducer } from './game/reducer'
 import { createInitialState } from './game/setup'
 import { buildMidGameFixture } from './game/fixtures'
 import { useRoom } from './net/useRoom'
+import { useMyTurnNotification } from './net/useMyTurnNotification'
 import { loadCreds, clearCreds, joinRoomApi, saveCreds } from './net/api'
 import type { GameState, Resource, PlayerId } from './game/types'
 import type { GameAction } from './game/actions'
@@ -262,6 +263,9 @@ function OnlineGame({
   onLeave: () => void
 }) {
   const [selectedVertex, setSelectedVertex] = useState<string | null>(null)
+  const currentPlayer = state.players[state.currentPlayerIndex]
+  const myPlayer = state.players.find(p => p.id === myPlayerId)
+  useMyTurnNotification(currentPlayer.id === myPlayerId, myPlayer?.name ?? 'toi')
   return (
     <>
       {!connected && <Banner message="🔌 Reconnexion en cours…" />}

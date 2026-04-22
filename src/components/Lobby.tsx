@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PublicRoom } from '../net/types'
 import type { PlayerId } from '../game/types'
 import { clearCreds, renameSlotApi, startRoomApi } from '../net/api'
@@ -18,6 +18,22 @@ export function Lobby({ room, myPlayerId, token, onLeave }: LobbyProps) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const shareUrl = `${location.origin}/?join=${room.id}`
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission | 'unsupported'>(
+    () => (typeof window !== 'undefined' && 'Notification' in window) ? Notification.permission : 'unsupported',
+  )
+
+  useEffect(() => {
+    if (notifPerm === 'unsupported') return
+    const h = () => setNotifPerm(Notification.permission)
+    window.addEventListener('focus', h)
+    return () => window.removeEventListener('focus', h)
+  }, [notifPerm])
+
+  async function handleEnableNotif() {
+    if (notifPerm === 'unsupported') return
+    const res = await Notification.requestPermission()
+    setNotifPerm(res)
+  }
 
   async function handleRename() {
     setBusy(true); setError(null)
@@ -81,6 +97,25 @@ export function Lobby({ room, myPlayerId, token, onLeave }: LobbyProps) {
             borderRadius: 6, padding: '8px 14px', cursor: 'pointer', fontWeight: 'bold',
           }}>📋 Copier</button>
         </div>
+
+        {notifPerm === 'default' && (
+          <button onClick={handleEnableNotif} style={{
+            width: '100%', padding: '10px 14px', marginBottom: 16, borderRadius: 10,
+            border: '1px solid #2a3a5a', background: '#101830', color: '#e8eef7',
+            cursor: 'pointer', fontSize: 13,
+          }}>
+            🔔 Activer les notifications quand c'est à toi de jouer
+          </button>
+        )}
+        {notifPerm === 'denied' && (
+          <div style={{
+            padding: '8px 12px', marginBottom: 16, borderRadius: 8,
+            background: 'rgba(230,126,34,0.12)', border: '1px solid #c98a3a',
+            color: '#e8d8b8', fontSize: 12, textAlign: 'center',
+          }}>
+            🔕 Notifications bloquées — active-les dans les réglages du navigateur pour être prévenu à ton tour.
+          </div>
+        )}
 
         <h2 style={{ fontSize: 16, color: '#a0b0c5', textTransform: 'uppercase', letterSpacing: 1.5, margin: '0 0 10px' }}>
           Joueurs ({room.slots.length}/4)
