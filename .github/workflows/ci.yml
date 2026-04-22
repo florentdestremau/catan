@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, merge-hotseat-online]
     tags: ['v*']
   pull_request:
 
