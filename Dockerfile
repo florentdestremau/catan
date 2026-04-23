@@ -3,28 +3,30 @@
 # --- Stage 1: build the Vite/React app ---
 FROM node:22-alpine AS builder
 WORKDIR /app
-
-# Install dependencies with cached layer
 COPY package.json package-lock.json ./
 RUN npm ci
-
-# Build
 COPY . .
 RUN npm run build
 
-# --- Stage 2: serve the static files with Caddy ---
-FROM caddy:2-alpine AS runtime
+# --- Stage 2: Bun runtime serving static + WS + API ---
+FROM oven/bun:1-alpine AS runtime
+WORKDIR /app
 
-# Static assets
-COPY --from=builder /app/dist /srv
-COPY Caddyfile /etc/caddy/Caddyfile
+# Sources : serveur + moteur de jeu partagé + dist statique
+COPY --from=builder /app/dist /app/dist
+COPY --from=builder /app/server /app/server
+COPY --from=builder /app/src/game /app/src/game
+COPY --from=builder /app/package.json /app/package.json
 
-# Once.sh conventions
+ENV NODE_ENV=production
+ENV PORT=80
+ENV DIST_DIR=/app/dist
+ENV STORAGE_DIR=/storage
+
 VOLUME ["/storage"]
 EXPOSE 80
 
-# Healthcheck (mirrors /up)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-	CMD wget -qO- http://127.0.0.1/up || exit 1
+  CMD wget -qO- http://127.0.0.1/up || exit 1
 
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+CMD ["bun", "run", "server/index.ts"]
