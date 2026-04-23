@@ -538,14 +538,15 @@ function MobileGame({ state, dispatch, selectedVertex, setSelectedVertex, visibl
       </div>
 
       <div style={{
-        width: '100%', padding: '0 4px',
+        width: '100%',
         display: 'flex', justifyContent: 'center',
       }}>
         <div style={{
           width: '100%', maxWidth: 900, position: 'relative',
-          border: `4px solid ${current.color}`, borderRadius: 10,
+          outline: `3px solid ${current.color}`,
+          outlineOffset: -3,
           boxShadow: `0 0 16px ${current.color}66`,
-          transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+          transition: 'outline-color 0.25s ease, box-shadow 0.25s ease',
         }}>
           <Board
             state={state}

@@ -235,7 +235,7 @@ export function Board({ state, dispatch, selectedVertex, onSelectVertex }: Board
     <svg
       viewBox={`0 0 ${SVG_W} ${SVG_H}`}
       preserveAspectRatio="xMidYMid meet"
-      style={{ width: '100%', height: '100%', maxWidth: SVG_W, maxHeight: SVG_H, background: '#1a6496', display: 'block' }}
+      style={{ width: '100%', aspectRatio: `${SVG_W} / ${SVG_H}`, background: '#1a6496', display: 'block', touchAction: 'manipulation' }}
     >
       <TerrainPatterns />
       {/* Hexes */}
