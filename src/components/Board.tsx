@@ -322,9 +322,10 @@ export function Board({ state, dispatch, selectedVertex, onSelectVertex }: Board
             key={`click-${edge.id}`}
             x1={p1.x + OFFSET_X} y1={p1.y + OFFSET_Y}
             x2={p2.x + OFFSET_X} y2={p2.y + OFFSET_Y}
-            stroke="transparent"
-            strokeWidth={16}
-            style={{ cursor: 'pointer' }}
+            stroke="rgba(0,0,0,0.001)"
+            strokeWidth={28}
+            strokeLinecap="round"
+            style={{ cursor: 'pointer', touchAction: 'manipulation' }}
             onClick={() => handleEdgeClick(edge.id)}
           />
         )
@@ -341,14 +342,21 @@ export function Board({ state, dispatch, selectedVertex, onSelectVertex }: Board
         return (
           <g key={vertex.id}>
             {highlighted && (
-              <circle
-                cx={cx} cy={cy} r={12}
-                fill="rgba(255,255,255,0.3)"
-                stroke="white"
-                strokeWidth={2}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleVertexClick(vertex.id)}
-              />
+              <>
+                <circle
+                  cx={cx} cy={cy} r={12}
+                  fill="rgba(255,255,255,0.3)"
+                  stroke="white"
+                  strokeWidth={2}
+                  style={{ pointerEvents: 'none' }}
+                />
+                <circle
+                  cx={cx} cy={cy} r={20}
+                  fill="rgba(0,0,0,0.001)"
+                  style={{ cursor: 'pointer', touchAction: 'manipulation' }}
+                  onClick={() => handleVertexClick(vertex.id)}
+                />
+              </>
             )}
             {building && (
               <rect
